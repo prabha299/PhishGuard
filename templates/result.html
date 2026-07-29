@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scan result — PhishGuard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="eyebrow"><span class="dot"></span>Scan complete</div>
+      <h1>Scan result</h1>
+      <p class="sub">Here's what the model found in the email you submitted.</p>
+    </div>
+
+    <div class="verdict {{ 'danger' if is_phishing else 'safe' }}">
+      <div class="verdict-label">Verdict</div>
+      <div class="verdict-title">
+        <span class="badge-icon">{{ '⚠' if is_phishing else '✓' }}</span>
+        {{ prediction }}
+      </div>
+
+      <div class="verdict-label">Confidence</div>
+      <div class="confidence-row">
+        <div class="confidence-track">
+          <div class="confidence-fill" style="width: {{ confidence }}%;"></div>
+        </div>
+        <div class="confidence-value">{{ confidence }}%</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Scanned text</h2>
+      <pre class="scanned-text">{{ original_text }}</pre>
+    </div>
+
+    <a class="back-link" href="{{ url_for('index') }}">&larr; Scan another email</a>
+
+    <footer class="foot">PhishGuard · local TF-IDF + logistic regression classifier</footer>
+  </div>
+</body>
+</html>

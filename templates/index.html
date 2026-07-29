@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhishGuard — Email Threat Scanner</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="eyebrow"><span class="dot"></span>Scanner online</div>
+      <h1>PhishGuard</h1>
+      <p class="sub">Paste in the full text of an email — headers, body, links and all — and the model will flag whether it looks like a phishing attempt.</p>
+    </div>
+
+    {% if error %}
+      <div class="alert">{{ error }}</div>
+    {% endif %}
+
+    <div class="card">
+      <h2>Scan an email</h2>
+      <form action="{{ url_for('predict') }}" method="POST">
+        <label class="field-label" for="email_text">Email text</label>
+        <textarea
+          id="email_text"
+          name="email_text"
+          placeholder="Paste the email content here, e.g.&#10;&#10;Dear customer, your account has been suspended. Verify your identity at http://secure-verify-account.com..."
+        ></textarea>
+        <div class="actions">
+          <span class="hint">Nothing is sent anywhere except your own local database.</span>
+          <button class="scan-btn" type="submit">Scan email</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Recent scans</h2>
+      {% if history and history|length > 0 %}
+        <table class="history">
+          <thead>
+            <tr>
+              <th>Time (UTC)</th>
+              <th>Snippet</th>
+              <th>Verdict</th>
+              <th>Confidence</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in history %}
+            <tr>
+              <td class="snippet">{{ row['created_at'] }}</td>
+              <td class="snippet">{{ row['email_snippet'] }}</td>
+              <td>
+                <span class="tag {{ 'phishing' if row['prediction'] == 'Phishing' else 'legitimate' }}">
+                  {{ row['prediction'] }}
+                </span>
+              </td>
+              <td>{{ '%.1f'|format(row['confidence']) }}%</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="empty-state">No scans logged yet — run one above to see it show up here.</p>
+      {% endif %}
+    </div>
+
+    <footer class="foot">PhishGuard · local TF-IDF + logistic regression classifier</footer>
+  </div>
+</body>
+</html>
